@@ -1,40 +1,52 @@
-# EJS
+# EJS-No-Node
 
-Embedded JavaScript templates.
+Embedded JavaScript templates for non-Node environments
 
-[![Build Status](https://travis-ci.org/visionmedia/ejs.png)](https://travis-ci.org/visionmedia/ejs)
+This is based off TJ's ejs library, but with Node.js stuff removed to make it
+run on Rhino as a module. It is used in the
+[Solve for All Javascript execution environment](https://solveforall.com/docs/developer/javascript_execution).
 
-- - -
-NOTE: Version 2 of EJS makes some breaking changes with this version (notably,
-removal of the filters feature).  Work on v2 is happening here:
-https://github.com/mde/ejs
-
-File issues for EJS v2 here: https://github.com/mde/ejs/issues
-- - -
+The execution environment allows developers to write plugins to the
+[Solve for All](https://solveforall.com/) answer (search) engine in Javascript.
 
 ## Installation
 
-    $ npm install ejs
+* In a browser environment,
+
+    <script src="scripts/ejs-no-node.js"></script>
+
+  ("ejs_no_node" should now be available in the global scope (window))
+
+* In a CommonJS environment (Node.js, Rhino),
+
+    var ejs = require('ejs-no-node');
+
+* In a Solve for All plugin,
+
+    const ejs = require('ejs');
 
 ## Features
 
-  * Complies with the [Express](http://expressjs.com) view system
-  * Static caching of intermediate JavaScript
   * Unbuffered code for conditionals etc `<% code %>`
   * Escapes html by default with `<%= code %>`
   * Unescaped buffering with `<%- code %>`
   * Supports tag customization
   * Filter support for designer-friendly templates
-  * Includes
   * Client-side support
   * Newline slurping with `<% code -%>` or `<% -%>` or `<%= code -%>` or `<%- code -%>`
+
+## Removed Features compared to tj/ejs
+
+* Complies with the [Express](http://expressjs.com) view system
+* Static caching of intermediate JavaScript
+* Includes
 
 ## Example
 
     <% if (user) { %>
 	    <h2><%= user.name %></h2>
     <% } %>
-    
+
 ## Try out a live example now
 
 <a href="https://runnable.com/ejs" target="_blank"><img src="https://runnable.com/external/styles/assets/runnablebtn.png" style="width:67px;height:25px;"></a>
@@ -49,8 +61,6 @@ File issues for EJS v2 here: https://github.com/mde/ejs/issues
 
 ## Options
 
-  - `cache`           Compiled functions are cached, requires `filename`
-  - `filename`        Used by `cache` to key caches
   - `scope`           Function execution context
   - `debug`           Output generated function body
   - `compileDebug`    When `false` no debug instrumentation is compiled
@@ -58,22 +68,6 @@ File issues for EJS v2 here: https://github.com/mde/ejs/issues
   - `open`            Open tag, defaulting to "<%"
   - `close`           Closing tag, defaulting to "%>"
   - *                 All others are template-local variables
-
-## Includes
-
- Includes are relative to the template with the `include` statement,
- for example if you have "./views/users.ejs" and "./views/user/show.ejs"
- you would use `<% include user/show %>`. The included file(s) are literally
- included into the template, _no_ IO is performed after compilation, thus
- local variables are available to these included templates.
-
-```
-<ul>
-  <% users.forEach(function(user){ %>
-    <% include user/show %>
-  <% }) %>
-</ul>
-```
 
 ## Custom delimiters
 
@@ -146,31 +140,14 @@ Currently these filters are available:
 ## Adding filters
 
  To add a filter simply add a method to the `.filters` object:
- 
+
 ```js
 ejs.filters.last = function(obj) {
   return obj[obj.length - 1];
 };
 ```
 
-## Layouts
-
-  Currently EJS has no notion of blocks, only compile-time `include`s,
-  however you may still utilize this feature to implement "layouts" by
-  simply including a header and footer like so:
-
-```html
-<% include head %>
-<h1>Title</h1>
-<p>My page</p>
-<% include foot %>
-```
-
-## client-side support
-
-  include `./ejs.js` or `./ejs.min.js` and `require("ejs").compile(str)`.
-
-## License 
+## License
 
 (The MIT License)
 

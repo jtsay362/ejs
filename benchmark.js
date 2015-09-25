@@ -1,6 +1,6 @@
 
 
-var ejs = require('./lib/ejs'),
+var ejs = require('./dist/ejs-no-node.min.js'),
     str = '<% if (foo) { %><p><%= foo %></p><% } %>',
     times = 50000;
 

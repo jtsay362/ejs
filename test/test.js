@@ -104,44 +104,6 @@ describe('ejs.render(str, options)', function(){
   })
 })
 
-describe('ejs.renderFile(path, options, fn)', function(){
-  it('should render a file', function(done){
-    ejs.renderFile('test/fixtures/para.ejs', function(err, html){
-      if (err) return done(err);
-      html.should.equal('<p>hey</p>');
-      done();
-    });
-  })
-
-  it('should accept locals', function(done){
-    var options = { name: 'tj', open: '{', close: '}' };
-    ejs.renderFile('test/fixtures/user.ejs', options, function(err, html){
-      if (err) return done(err);
-      html.should.equal('<h1>tj</h1>');
-      done();
-    });
-  })
-
-  it('should not catch err threw by callback', function(done){
-    var options = { name: 'tj', open: '{', close: '}' };
-    var counter = 0;
-    try {
-      ejs.renderFile('test/fixtures/user.ejs', options, function(err, html){
-        counter++;
-        if (err) {
-          err.message.should.not.equal('Exception in callback');
-          return done(err);
-        }
-        throw new Error('Exception in callback');
-      });
-    } catch (err) {
-      counter.should.equal(1);
-      err.message.should.equal('Exception in callback');
-      done();
-    }
-  })
-})
-
 describe('<%=', function(){
 
   it('should escape &amp;<script>', function(){
@@ -153,7 +115,7 @@ describe('<%=', function(){
     ejs.render('<%= name %>', { name: "The Jones's" })
       .should.equal('The Jones&#39;s');
   })
-  
+
   it("should escape &foo_bar;", function(){
     ejs.render('<%= name %>', { name: "&foo_bar;" })
       .should.equal('&amp;foo_bar;');
@@ -171,8 +133,8 @@ describe('<%-', function(){
       ejs.compile('<h1>oops</h1><%- name ->')
       throw new Error('Expected parse failure');
     } catch (err) {
-      err.message.should.equal('Could not find matching close tag "%>".');      
-    }      
+      err.message.should.equal('Could not find matching close tag "%>".');
+    }
   })
 })
 
@@ -282,50 +244,9 @@ describe('exceptions', function(){
   });
 })
 
-describe('includes', function(){
-  it('should include ejs', function(){
-    var file = 'test/fixtures/include.ejs';
-    ejs.render(fixture('include.ejs'), { filename: file, pets: users, open: '[[', close: ']]' })
-      .should.equal(fixture('include.html'));
-  })
-
-  it('should work when nested', function(){
-    var file = 'test/fixtures/menu.ejs';
-    ejs.render(fixture('menu.ejs'), { filename: file, pets: users })
-      .should.equal(fixture('menu.html'));
-  })
-
-  it('should include arbitrary files as-is', function(){
-    var file = 'test/fixtures/include.css.ejs';
-    ejs.render(fixture('include.css.ejs'), { filename: file, pets: users })
-      .should.equal(fixture('include.css.html'));
-  })
-
-  it('should pass compileDebug to include', function(){
-    var file = 'test/fixtures/include.ejs';
-    var fn = ejs.compile(fixture('include.ejs'), { filename: file, open: '[[', close: ']]', compileDebug: false, client: true })
-    var str = fn.toString();
-    eval('var preFn = ' + str);
-    str.should.not.match(/__stack/);
-    (function() {
-      preFn({ pets: users });
-    }).should.not.throw();
-  })
-})
-
 describe('comments', function() {
   it('should fully render with comments removed', function() {
     ejs.render(fixture('comments.ejs'))
       .should.equal(fixture('comments.html'));
-  })
-})
-
-
-describe('require', function() {
-  it('should allow ejs templates to be required as node modules', function() {
-      var file = 'test/fixtures/include.ejs'
-        , template = require(__dirname + '/fixtures/menu.ejs');
-      template({ filename: file, pets: users })
-        .should.equal(fixture('menu.html'));
   })
 })

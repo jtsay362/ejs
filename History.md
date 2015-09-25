@@ -1,3 +1,6 @@
+no-node 1.0.0 / 2015-09-25
+
+ * change: remove NodeJS specific code to output a module suitable for browser or Rhino
 
 1.0.0 / 2014-03-24
 ==================
