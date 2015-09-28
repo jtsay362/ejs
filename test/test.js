@@ -250,3 +250,25 @@ describe('comments', function() {
       .should.equal(fixture('comments.html'));
   })
 })
+
+describe('compileToFunctionString', function(){
+  it('should compile to a string', function(){
+    var fnString = ejs.compileToFunctionString('<p>yay</p>');
+    (typeof fnString).should.equal('string');
+  });
+
+  it('should compile to a valid function string', function(){
+    var fnString = ejs.compileToFunctionString('<p>yay <%= x %></p>', {
+      functionName: 'render',
+      client: true
+    });
+
+    console.log('function = ' + fnString);
+
+    var locals = {
+      x: 'hoo!'
+    };
+    eval(fnString + 'render(' + JSON.stringify(locals) + ')').should.equal(
+      '<p>yay hoo!</p>');
+  });
+});

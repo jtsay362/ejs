@@ -239,16 +239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return buf;
 	};
 
-	/**
-	 * Compile the given `str` of ejs into a `Function`.
-	 *
-	 * @param {String} str
-	 * @param {Object} options
-	 * @return {Function}
-	 * @api public
-	 */
-
-	var compile = exports.compile = function(str, options){
+	function compileToFunctionBody(str, options) {
 	  options = options || {};
 	  var escape = options.escape || utils.escape;
 
@@ -277,11 +268,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (options.debug) console.log(str);
 	  if (client) str = 'escape = escape || ' + escape.toString() + ';\n' + str;
 
+	  return str;
+	}
+
+	/**
+	 * Compile the given `str` of ejs into a string that is a function body.
+	 * Useful for when the template contains code to be transpiled, and can't
+	 * be executed directly in the current environment.
+	 *
+	 * Options:
+	 *
+	 *   - `locals`          Local variables object
+	 *   - `filename`        Used by `cache` to key caches
+	 *   - `scope`           Function execution context
+	 *   - `debug`           Output generated function body
+	 *   - `open`            Open tag, defaulting to "<%"
+	 *   - `close`           Closing tag, defaulting to "%>"
+	 *   - `functionName`    Name of the function generated, defaulting to "anonymous"
+	 *
+	 * @param {String} str
+	 * @param {Object} options
+	 * @return {String}
+	 * @api public
+	 */
+
+	exports.compileToFunctionString = function(str, options){
+	  options = options || {};
+	  var functionName = options.functionName || 'anonymous';
+	  var functionBody = compileToFunctionBody(str, options);
+	  return 'function ' + functionName + '(locals, filters, escape, rethrow){' +
+	    functionBody + '}';
+	}
+
+	/**
+	 * Compile the given `str` of ejs into a `Function`.
+	 *
+	 * @param {String} str
+	 * @param {Object} options
+	 * @return {Function}
+	 * @api public
+	 */
+
+	var compile = exports.compile = function(str, options){
+	  options = options || {};
+	  var client = options.client
+	    , filename = options.filename;
+	  var escape = options.escape || utils.escape;
+
 	  try {
-	    var fn = new Function('locals, filters, escape, rethrow', str);
+	    var functionBody = compileToFunctionBody(str, options);
+	    var fn = new Function('locals, filters, escape, rethrow', functionBody);
 	  } catch (err) {
 	    if ('SyntaxError' == err.name) {
-	      err.message += options.filename
+	      err.message += filename
 	        ? ' in ' + filename
 	        : ' while compiling ejs';
 	    }
@@ -300,7 +339,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * Options:
 	 *
-	 *   - `locals`          Local variables object 
+	 *   - `locals`          Local variables object
 	 *   - `filename`        Used by `cache` to key caches
 	 *   - `scope`           Function execution context
 	 *   - `debug`           Output generated function body

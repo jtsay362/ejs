@@ -35,6 +35,10 @@ The execution environment allows developers to write plugins to the
   * Client-side support
   * Newline slurping with `<% code -%>` or `<% -%>` or `<%= code -%>` or `<%- code -%>`
 
+## Added Features
+
+  * Ability to output function strings that are not directly executable (e.g. ES6 code that needs to be transpiled)
+
 ## Removed Features compared to tj/ejs
 
 * Complies with the [Express](http://expressjs.com) view system
@@ -59,6 +63,9 @@ The execution environment allows developers to write plugins to the
     ejs.render(str, options);
     // => str
 
+    ejs.compileToFunctionString(str, options);
+    // => str, e.g. 'function anonymous(locals, filters, escape, rethrow) { ... }'
+
 ## Options
 
   - `scope`           Function execution context
@@ -67,6 +74,7 @@ The execution environment allows developers to write plugins to the
   - `client`          Returns standalone compiled function
   - `open`            Open tag, defaulting to "<%"
   - `close`           Closing tag, defaulting to "%>"
+  - `functionName`    For compileToFunctionString(), the name of the function to generate, defaulting to "anonymous"
   - *                 All others are template-local variables
 
 ## Custom delimiters
